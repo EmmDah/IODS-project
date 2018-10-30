@@ -1,4 +1,4 @@
 
 # About the project
 
-*Write a short description about the course and add a link to your github repository here. This is an R markdown (.Rmd) file so you can use R markdown syntax. See the 'Useful links' page in the mooc area (chapter 1) for instructions.*
+*During the course we will learn how to use open data and open research tools tool. We will understand the principles, advantages and possibilities for using these open research tools (Rstudio, Github, RMarkDown). Following methods will be used during the course: Regression models, Clustering and classification, Discriminant analysis (DA), K-means clustering (KMC), Dimensionality reduction techniques, Principal component analysis (PCA), Multiple Correspondence analysis (MCA)*
