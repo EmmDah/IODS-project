@@ -1,5 +1,4 @@
 ---
-title: "Open data science course 2018"
 output: github_document
 ---
 
