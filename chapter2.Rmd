@@ -5,3 +5,4 @@
 - I have made a Github account and learned how to use it. 
 - My Github account is https://github.com/EmmDah/ 
 - My course diary is https://EmmDah.github.io/IODS-project/
+- My Github repository for the project https://github.com/EmmDah/IODS-project
