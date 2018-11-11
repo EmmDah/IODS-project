@@ -82,7 +82,7 @@ p_3
 
 We run a linear regression to test how much attitude, age and gender explain the exam points. Of the included variables, there was only a statistically significant relationship between attitude and exam points (P=8.34e-09). Each increase 1 score increase in attitude increased the exam points by 3.6 points. Age and gender was removed from analysis, since they were did statistically significantly associate with exam points and the analysis was rerun.The attitude explained 18.56 % of the variability in Exam points.
 
-```{r}
+```{r message=F}
 
 my_model <- lm(points ~ attitude+age+gender, data = students2014)
 
@@ -93,7 +93,10 @@ summary(my_model)
 my_model <- lm(points ~ attitude, data = students2014)
 
 summary(my_model)
+
 ```
+
+
 ##Draw diagnostic plots
 
 The Residual vs fitted plot is used to detect non-linearity, unequal error variances, and outliers, which linear regression assume there is not. Based on the plot it looks like there are some outliers.
@@ -105,7 +108,7 @@ three of residual "stands out" from the pattern of residuals, suggesting there a
 In the residuals vs leverege plot you can se that the outlier observations have a value of x that is far from the average of x.
 
 
-```{r}
+```{r message=F}
 par(mfrow = c(2,2))
 plot(my_model, which=c(1,2,5))
 

@@ -7,13 +7,13 @@
     "folds" : "",
     "hash" : "0",
     "id" : "C123B778",
-    "lastKnownWriteTime" : 1541972721,
-    "last_content_update" : 1541972721918,
+    "lastKnownWriteTime" : 1541973244,
+    "last_content_update" : 1541973244481,
     "path" : "~/GitHub/IODS-project/chapter2.Rmd",
     "project_path" : "chapter2.Rmd",
     "properties" : {
-        "cursorPosition" : "20,0",
-        "scrollLine" : "17"
+        "cursorPosition" : "111,0",
+        "scrollLine" : "102"
     },
     "relative_order" : 4,
     "source_on_save" : false,
