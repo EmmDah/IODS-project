@@ -62,8 +62,12 @@ data <- read.table("http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt"
   dim(learning2018)
   #has 7 columns, 166 observations.  
   
+  #set working directory to IODS project folder
+  setwd("~/GitHub/IODS-project")
+  
   write.table(learning2018, "~/GitHub/IODS-project/data/learning2018.txt", sep="\t", quote=F, row.names = F)
   learning2018 <- read.table("~/GitHub/IODS-project/data/learning2018.txt", header=T, sep="\t")
   dim(learning2018)  
   str(learning2018)
   head(learning2018)
+  #data structure looks good!
