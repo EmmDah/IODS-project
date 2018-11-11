@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "2197901625",
+    "hash" : "0",
     "id" : "C123B778",
     "lastKnownWriteTime" : 1541972721,
     "last_content_update" : 1541972721918,
     "path" : "~/GitHub/IODS-project/chapter2.Rmd",
     "project_path" : "chapter2.Rmd",
     "properties" : {
-        "cursorPosition" : "104,121",
-        "scrollLine" : "102"
+        "cursorPosition" : "20,0",
+        "scrollLine" : "17"
     },
     "relative_order" : 4,
     "source_on_save" : false,
