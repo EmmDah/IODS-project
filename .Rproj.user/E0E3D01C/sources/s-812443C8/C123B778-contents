@@ -94,4 +94,20 @@ my_model <- lm(points ~ attitude, data = students2014)
 
 summary(my_model)
 ```
+##Draw diagnostic plots
+
+The Residual vs fitted plot is used to detect non-linearity, unequal error variances, and outliers, which linear regression assume there is not. Based on the plot it looks like there are some outliers.
+
+The residuals ar located quite randomly around the 0 line, which suggest that the assumption that the relationship is linear correct.
+
+three of residual "stands out" from the pattern of residuals, suggesting there are some outliers. 
+
+In the residuals vs leverege plot you can se that the outlier observations have a value of x that is far from the average of x.
+
+
+```{r}
+par(mfrow = c(2,2))
+plot(my_model, which=c(1,2,5))
+
+```
 
