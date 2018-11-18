@@ -103,10 +103,10 @@ Based on the summary of the fitted model, familial relationships are negatively 
 
 Table 3 contains the Odds ratios of the modelled variables (and 95%CI), which were calculated by taking the exponent of the coefficients. By looking at these, we can say that
 
-*For each increase(=improvement)in familial relationships there was 27% decrease in high use of alcohol, with the true population effect between 43% and 6%. 
-*Persons having an urban address were 28% less likely to be high users of alcohol, however this observation was not statistically significant.
-*Persons of male sex were 142% more likely to be high user of alkohol (true population effect between 52% and 285%).
-*Persons who wanted to take a higher education were 44% less likely high alcohol users, however this observation was not statistically significant.
+* For each increase(=improvement)in familial relationships there was 27% decrease in high use of alcohol, with the true population effect between 43% and 6%. 
+* Persons having an urban address were 28% less likely to be high users of alcohol, however this observation was not statistically significant.
+* Persons of male sex were 142% more likely to be high user of alkohol (true population effect between 52% and 285%).
+* Persons who wanted to take a higher education were 44% less likely high alcohol users, however this observation was not statistically significant.
 
 
 ```{r warnings=F, message=F}
@@ -125,7 +125,16 @@ kable(ORs_CI, caption = "Table 3. Odds Ratio and 95%CI")
 
 ##Step 6
 ###The predictive power of the model
-A 2x2 cross tabulation of predictions versus the actual values is found in table 4 and  a graphic visualizing both the actual values and the predictions is in figure 4. The total proportion of inaccurately classified individuals (= the training error) is found in table 5.
+A 2x2 cross tabulation of predictions versus the actual values is found in tables and a graphic visualizing both the actual values and the predictions is in figure 4. 106 observations are predicted as false, even though they are true high users of alcohol (264 persons correctly predicted as non high alcohol users). Only 4 persons are falsely predicted as high alc users even though they are not, 8 persons are predicted correctly as high alc users. Model good at predicting non-high users, not so good at predicting high-users. The total proportion of inaccurately classified individuals (= the training error) is found in last table. Base on that table:
+
+* 69% is correctly identifed as non-high users
+* 2% correctly identified as high users.
+
+* 1%  non-high users uncorrectly identified as high users
+* 28% high users uncorrectly identified as non high users
+
+However, 71% is correctly identified, se better than guessing!
+
 
 The average number of wrong predictions in the training data was 0.28
 
@@ -148,7 +157,7 @@ alc <- mutate(alc, prediction = probability > 0.5)
 select(alc, famrel, sex, high_use, probability, prediction) %>% tail(10)
 
 # tabulate the target variable versus the predictions
-kable(table(high_use = alc$high_use, prediction = alc$prediction), caption = "Table 4. high alcohol use vs predictions")
+table(high_use = alc$high_use, prediction = alc$prediction)
 
 
 # access dplyr and ggplot2
@@ -161,9 +170,9 @@ g <- ggplot(alc, aes(x = probability, y = high_use,col=prediction))
 g +geom_point()+ggtitle("Figure 4. high use of alochol vs probability of high alcohol use")
 
 # tabulate the target variable versus the predictions
-kable(table(high_use = alc$high_use, prediction = alc$prediction), caption = "Table 5. high alcohol use vs predictions")
+table(high_use = alc$high_use, prediction = alc$prediction)
 
-kable(table(high_use = alc$high_use, prediction = alc$prediction)  %>% prop.table() %>% addmargins(), caption = "Table 6. High alcohol use vs predictions")
+table(high_use = alc$high_use, prediction = alc$prediction)  %>% prop.table() %>% addmargins()
 
 
 # define a loss function (average prediction error)
@@ -194,4 +203,4 @@ Super-Bonus: Perform cross-validation to compare the performance of different lo
 
 ```
 
-?cbind(
+
