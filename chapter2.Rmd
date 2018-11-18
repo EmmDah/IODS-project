@@ -32,7 +32,7 @@ Figure 1 shows the density distributions of each variable. All variables except 
 Figure 1 also shows correlation coffiecient for the each relationship between variables   and scatteplots illustrating the relationship. The strongest correlation is between attitude and points, the variables are moderately positively correlated (Cor=0.437) and similar among women and men (Figure 1 and 2). A moderate negative correlations is observed between deep and surface questions (cor -0.324), which is considerably higher among men (Men: -0.622 vs women:-0.087, Figure 1 and 3). For all other relationships, the correlation is low (<0.30).
 
 
-```{r message=FALSE}
+```{r message=FALSE, , fig.height=9, fig.width=9}
 
 library(GGally)
 library(ggplot2)
@@ -51,7 +51,7 @@ However, when we have a closer look at the relationship between
 
 
 
-```{r message=FALSE}
+```{r message=FALSE, fig.height=8, fig.width=8}
 
 # Access the gglot2 library
 library(ggplot2)
@@ -108,7 +108,7 @@ three of residual "stands out" from the pattern of residuals, suggesting there a
 In the residuals vs leverege plot you can se that the outlier observations have a value of x that is far from the average of x.
 
 
-```{r message=F}
+```{r message=F, fig.height=8, fig.width=8}
 par(mfrow = c(2,2))
 plot(my_model, which=c(1,2,5))
 
