@@ -65,13 +65,6 @@ kable(alc %>% group_by(higher) %>% summarise(count = n(),mean_alc_use =mean(alc_
 kable(alc %>% group_by(sex) %>% summarise(count = n(), mean_alc_use =mean(alc_use)),
       caption = "Table 2d. mean value of alcohol use divided by male and female")
 
-alc %>% group_by(high_use) %>% summarise(count = n(),
-                                                    mean_famrel = mean(famrel),
-                                                    mean_absences = mean(absences),
-                                                    mean_alc_use =mean(alc_use))
-
-
-
                      
 #check distribution of selected variables 
 gather(myalc_var) %>% ggplot(aes(value), fill=high_use) + facet_wrap("key", scales = "free") +geom_histogram(stat = "count")+theme_minimal()
@@ -106,9 +99,14 @@ ggarrange(ad, sex, hig, famre, labels=c("1a", "1b", "1c", "d"))
 ##step 5
 ###Logistic regression
 
+Based on the summary of the fitted model, familial relationships are negatively associated with high alcohol use (P=0.02), having an urban address is negatively associatiod with alcohol but not on a statistically significant level (P=0.08), male sex is positively associated with high alcohol use (P=0.0002) and wanting to take a higher education is negatively associated (but not statistically significant!) with high alcohol use. The z- and p-values are based on the wald test, which is used in the model to test whether the pairwise difference between the coefficient and the reference class and the other class is different from zero or not (categorical values). 
 
-Present and interpret a summary of the fitted model.
-Based on the summary of the fitted model, familial relationships are negatively associated with high alcohol use (P=0.02), having an urban address is negatively associatiod with alcohol but not on a statistically significant level (P=0.08), male sex is positively associated with high alcohol use (P=0.0002) and wanting to take a higher education is negatively associated (but not statistically significant!) with high alcohol use. The z- and p-values are based on the wald test, which is used in the model to test whether the pairwise difference between the coefficient and the reference class and the other class is different from zero or not (categorical values). Table 3 contains the Odds ratios of the modelled variables (and 95%CI), which were calculated by taking the exponent of the coefficients. By looking at these, we can say that for each increase(=improvement)in familial relationships there was 27% decrease in high use of alcohol, with the true population effect between 43% and 6%. persons having an urban address were 28% less likely to be high users of alcohol, howeve this observation was not statistically significant.
+Table 3 contains the Odds ratios of the modelled variables (and 95%CI), which were calculated by taking the exponent of the coefficients. By looking at these, we can say that
+
+*For each increase(=improvement)in familial relationships there was 27% decrease in high use of alcohol, with the true population effect between 43% and 6%. 
+*Persons having an urban address were 28% less likely to be high users of alcohol, however this observation was not statistically significant.
+*Persons of male sex were 142% more likely to be high user of alkohol (true population effect between 52% and 285%).
+*Persons who wanted to take a higher education were 44% less likely high alcohol users, however this observation was not statistically significant.
 
 
 ```{r warnings=F, message=F}
@@ -127,9 +125,44 @@ kable(ORs_CI, caption = "Table 3. Odds Ratio and 95%CI")
 
 ##Step 6
 ###The predictive power of the model
-Using the variables which, according to your logistic regression model, had a statistical relationship with high/low alcohol consumption, explore the predictive power of you model. Provide a 2x2 cross tabulation of predictions versus the actual values and optionally display a graphic visualizing both the actual values and the predictions. Compute the total proportion of inaccurately classified individuals (= the training error) and comment on all the results. Compare the performance of the model with performance achieved by some simple guessing strategy
+A 2x2 cross tabulation of predictions versus the actual values is found in table 4 and optionally display a graphic visualizing both the actual values and the predictions. Compute the total proportion of inaccurately classified individuals (= the training error) and comment on all the results. Compare the performance of the model with performance achieved by some simple guessing strategy
 
 ```{r}
+
+library(dplyr)
+#fit a logistic regression with my sig variables
+glm_res2 <- glm(high_use ~ famrel+sex, data = alc, family = "binomial")
+
+#predict probability of high use
+probabilities <- predict(glm_res2, type = "response")
+
+# add the predicted probabilities to 'alc'
+alc <- mutate(alc, probability = probabilities)
+
+# use the probabilities to make a prediction of high_use
+alc <- mutate(alc, prediction = probability > 0.5)
+
+# see the last ten original classes, predicted probabilities, and class predictions
+select(alc, famrel, sex, high_use, probability, prediction) %>% tail(10)
+
+# tabulate the target variable versus the predictions
+kable(table(high_use = alc$high_use, prediction = alc$prediction), caption = "Table 4")
+
+
+# access dplyr and ggplot2
+library(dplyr); library(ggplot2)
+
+# initialize a plot of 'high_use' versus 'probability' in 'alc'
+g <- ggplot(alc, aes(x = probability, y = high_use,col=prediction))
+
+# define the geom as points and draw the plot
+g +geom_point()
+
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction)
+
+table(high_use = alc$high_use, prediction = alc$prediction)  %>% prop.table() %>% addmargins()
+
 
 ```
 
