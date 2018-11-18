@@ -1,0 +1,152 @@
+
+#Exercise 3
+
+##Steps 1-2
+
+###Background (Brief description of data)
+The data is collected during the 2005-2006 school year from two public schools (secondary education) in Portugal.
+The data include student grades, demographic, social and school related variables, which were collected by using school reports and questionnaires.Among these is also alcohol use. Two datasets are provided regarding the performance in two distinct subjects: Mathematics (mat) and Portuguese language (por). These two have been combined into one file.
+
+Variables G1, G2, G3 are the grades from period 1 to 3 (3 is final grade). Range is from 0-20 and an description of the range of points is in table 1.
+
+####Table 1.Grades in Portugal (and France)
+
+| Excellent | Good | Satisfactory | Sufficient | Fail |
+|-----------|------|--------------|------------|------|
+|16-20p | 14-15p | 12-13p | 10-11p | 0-9p | fail |
+
+
+```{r message=FALSE}
+#Read the joined student alcohol consumption data into R
+alc <- read.delim("~/GitHub/IODS-project/data/alc2018.txt")
+dim(alc)
+#str(alc)
+#Observations: 382
+#Variables: 35
+
+#Print out the names of the variables
+colnames(alc)
+
+```
+
+##Step 3-4
+
+###Personal hypotheses
+
+I chose the following interesting variables from the datset: "sex", "adress"" (student's home address type, rural or urban), "famrel"  (from 1 - very bad to 5 - excellent) and higher (wants to take higher education (binary: yes or no)). My personal hypotheses regarding these variables and their effect on alcohol consuption is:
+
+Students  of male sex, with poor family relationships,that don't want to make a higher eduction and live in an urban environment drink more alcohol.
+
+###Numerical and graphical exploration of the variables
+
+Based on a numerical exploration of the data, it seems that familial relationships are slightly better among non-high alcohol users (table 2a), as hypothesized. However, the mean  alcohol intake seem to be higher among persons living in an rural envoronment(2b), which was unexpected. Those that wanted to take an higher eductation and persons of male sex had on average a higher alcohol intake (Table 2c-d). The same is also clear from the distribution figures of the selected variables (figure1a-d)
+
+```{r echo=F, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
+
+library(dplyr);library(ggplot2);library(tidyr);library(knitr);library(ggpubr)
+
+#subsetting interesting variable for numerical data summarizes
+my_var_names <- c("address", "famrel", "higher", "sex", "alc_use")
+myalc_var <- subset(alc, select=my_var_names)
+
+
+# produce summary statistics by group
+kable(alc %>% group_by(high_use) %>% 
+        summarise(count = n(),mean_famrel = mean(famrel)), 
+      caption=" Table 2a. mean value of familial relationships among high vs low users of alcohol")
+
+kable(alc %>% group_by(address) %>% 
+        summarise(count = n(),mean_alc_use =mean(alc_use)), 
+      caption = "Table 2b. mean value of alcohol use among persons with a rural or urban address")
+
+kable(alc %>% group_by(higher) %>% summarise(count = n(),mean_alc_use =mean(alc_use)), 
+      caption = "Table 2c. mean value of alcohol use divided by persons wanting to take higher eduction")
+
+kable(alc %>% group_by(sex) %>% summarise(count = n(), mean_alc_use =mean(alc_use)),
+      caption = "Table 2d. mean value of alcohol use divided by male and female")
+
+alc %>% group_by(high_use) %>% summarise(count = n(),
+                                                    mean_famrel = mean(famrel),
+                                                    mean_absences = mean(absences),
+                                                    mean_alc_use =mean(alc_use))
+
+
+
+                     
+#check distribution of selected variables 
+gather(myalc_var) %>% ggplot(aes(value), fill=high_use) + facet_wrap("key", scales = "free") +geom_histogram(stat = "count")+theme_minimal()
+
+
+ad<- ggplot() + 
+  geom_density(data=alc, aes(x=alc_use, group=address, fill=address),alpha=0.5, adjust=2) + 
+  xlab("Alcohol intake (1-5)") +
+  ylab("Density") +ggtitle("Alcohol intake divided by address\n(R=Rural, U=Urban) ")
+
+sex<- ggplot() + 
+  geom_density(data=alc, aes(x=alc_use, group=sex, fill=sex),alpha=0.5, adjust=2) + 
+  xlab("Alcohol intake (1-5)") +
+  ylab("Density") +ggtitle("Alcohol intake divided by gender\n(M=MAle, F=Female) ")
+
+hig<- ggplot() + 
+  geom_density(data=alc, aes(x=alc_use, group=sex, fill=sex),alpha=0.5, adjust=2) + 
+  xlab("Alcohol intake (1-5)") +
+  ylab("Density") +ggtitle("Alcohol intake divided by want to take\nhigher education")
+
+famre<- ggplot() + 
+  geom_density(data=alc, aes(x=famrel, group=high_use, fill=high_use),alpha=0.5, adjust=2) + 
+  xlab("Familial relationships (1-5, poor-good)") +
+  ylab("Density") +ggtitle("familial relationships divided by high alcohol intake\n(alc_use over 2)")
+
+paste("Figure. 1")
+ggarrange(ad, sex, hig, famre, labels=c("1a", "1b", "1c", "d"))
+
+
+```
+
+##step 5
+###Logistic regression
+
+
+Present and interpret a summary of the fitted model.
+Based on the summary of the fitted model, familial relationships are negatively associated with high alcohol use (P=0.02), having an urban address is negatively associatiod with alcohol but not on a statistically significant level (P=0.08), male sex is positively associated with high alcohol use (P=0.0002) and wanting to take a higher education is negatively associated (but not statistically significant!) with high alcohol use. The z- and p-values are based on the wald test, which is used in the model to test whether the pairwise difference between the coefficient and the reference class and the other class is different from zero or not (categorical values). Table 3 contains the Odds ratios of the modelled variables (and 95%CI), which were calculated by taking the exponent of the coefficients. By looking at these, we can say that for each increase(=improvement)in familial relationships there was 27% decrease in high use of alcohol, with the true population effect between 43% and 6%. persons having an urban address were 28% less likely to be high users of alcohol, howeve this observation was not statistically significant.
+
+
+```{r warnings=F, message=F}
+glm_res <- glm(high_use ~ famrel + address +sex+higher, data = alc, family = "binomial")
+library(knitr)
+#summary of the model
+summary(glm_res)
+
+#OR and 95%CIs
+ORs_CI <-cbind(t(t(exp(coef(glm_res)))), exp(confint.default(glm_res)))
+colnames(ORs_CI)[1] <- "OR"
+kable(ORs_CI, caption = "Table 3. Odds Ratio and 95%CI")
+
+
+```
+
+##Step 6
+###The predictive power of the model
+Using the variables which, according to your logistic regression model, had a statistical relationship with high/low alcohol consumption, explore the predictive power of you model. Provide a 2x2 cross tabulation of predictions versus the actual values and optionally display a graphic visualizing both the actual values and the predictions. Compute the total proportion of inaccurately classified individuals (= the training error) and comment on all the results. Compare the performance of the model with performance achieved by some simple guessing strategy
+
+```{r}
+
+```
+
+##step 7
+###10-fold Cross-validation
+Bonus: Perform 10-fold cross-validation on your model. Does your model have better test set performance (smaller prediction error using 10-fold cross-validation) compared to the model introduced in DataCamp (which had about 0.26 error). Could you find such a model?
+
+```{r}
+
+```
+
+##step 8
+###Cross-validation ofthe performance of different logistic regression models 
+Super-Bonus: Perform cross-validation to compare the performance of different logistic regression models (= different sets of predictors). Start with a very high number of predictors and explore the changes in the training and testing errors as you move to models with less predictors. Draw a graph displaying the trends of both training and testing errors by the number of predictors in the model. 
+
+```{r}
+
+```
+
+?cbind(
