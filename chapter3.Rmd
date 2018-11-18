@@ -125,7 +125,7 @@ kable(ORs_CI, caption = "Table 3. Odds Ratio and 95%CI")
 
 ##Step 6
 ###The predictive power of the model
-A 2x2 cross tabulation of predictions versus the actual values is found in table 4 and optionally display a graphic visualizing both the actual values and the predictions. Compute the total proportion of inaccurately classified individuals (= the training error) and comment on all the results. Compare the performance of the model with performance achieved by some simple guessing strategy
+A 2x2 cross tabulation of predictions versus the actual values is found in table 4 and  a graphic visualizing both the actual values and the predictions is in figure 4. The total proportion of inaccurately classified individuals (= the training error) is found in table 5.
 
 ```{r}
 
@@ -146,7 +146,7 @@ alc <- mutate(alc, prediction = probability > 0.5)
 select(alc, famrel, sex, high_use, probability, prediction) %>% tail(10)
 
 # tabulate the target variable versus the predictions
-kable(table(high_use = alc$high_use, prediction = alc$prediction), caption = "Table 4")
+kable(table(high_use = alc$high_use, prediction = alc$prediction), caption = "Table 4. high alcohol use vs predictions")
 
 
 # access dplyr and ggplot2
@@ -156,12 +156,12 @@ library(dplyr); library(ggplot2)
 g <- ggplot(alc, aes(x = probability, y = high_use,col=prediction))
 
 # define the geom as points and draw the plot
-g +geom_point()
+g +geom_point()+ggtitle("Figure 4. high use of alochol vs probability of high alcohol use")
 
 # tabulate the target variable versus the predictions
-table(high_use = alc$high_use, prediction = alc$prediction)
+kable(table(high_use = alc$high_use, prediction = alc$prediction), caption = "Table 5. high alcohol use vs predictions")
 
-table(high_use = alc$high_use, prediction = alc$prediction)  %>% prop.table() %>% addmargins()
+kable(table(high_use = alc$high_use, prediction = alc$prediction)  %>% prop.table() %>% addmargins(), caption = "Table 6. High alcohol use vs predictions")
 
 
 ```
