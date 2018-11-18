@@ -554,7 +554,12 @@ colnames(alc)</code></pre>
 <h3>Logistic regression</h3>
 <p>Based on the summary of the fitted model, familial relationships are negatively associated with high alcohol use (P=0.02), having an urban address is negatively associatiod with alcohol but not on a statistically significant level (P=0.08), male sex is positively associated with high alcohol use (P=0.0002) and wanting to take a higher education is negatively associated (but not statistically significant!) with high alcohol use. The z- and p-values are based on the wald test, which is used in the model to test whether the pairwise difference between the coefficient and the reference class and the other class is different from zero or not (categorical values).</p>
 <p>Table 3 contains the Odds ratios of the modelled variables (and 95%CI), which were calculated by taking the exponent of the coefficients. By looking at these, we can say that</p>
-<p><em>For each increase(=improvement)in familial relationships there was 27% decrease in high use of alcohol, with the true population effect between 43% and 6%. </em>Persons having an urban address were 28% less likely to be high users of alcohol, however this observation was not statistically significant. <em>Persons of male sex were 142% more likely to be high user of alkohol (true population effect between 52% and 285%). </em>Persons who wanted to take a higher education were 44% less likely high alcohol users, however this observation was not statistically significant.</p>
+<ul>
+<li>For each increase(=improvement)in familial relationships there was 27% decrease in high use of alcohol, with the true population effect between 43% and 6%.</li>
+<li>Persons having an urban address were 28% less likely to be high users of alcohol, however this observation was not statistically significant.</li>
+<li>Persons of male sex were 142% more likely to be high user of alkohol (true population effect between 52% and 285%).</li>
+<li>Persons who wanted to take a higher education were 44% less likely high alcohol users, however this observation was not statistically significant.</li>
+</ul>
 <pre class="r"><code>glm_res &lt;- glm(high_use ~ famrel + address +sex+higher, data = alc, family = &quot;binomial&quot;)
 library(knitr)
 #summary of the model
@@ -639,8 +644,12 @@ kable(ORs_CI, caption = &quot;Table 3. Odds Ratio and 95%CI&quot;)</code></pre>
 <div id="the-predictive-power-of-the-model" class="section level3">
 <h3>The predictive power of the model</h3>
 <p>A 2x2 cross tabulation of predictions versus the actual values is found in tables and a graphic visualizing both the actual values and the predictions is in figure 4. 106 observations are predicted as false, even though they are true high users of alcohol (264 persons correctly predicted as non high alcohol users). Only 4 persons are falsely predicted as high alc users even though they are not, 8 persons are predicted correctly as high alc users. Model good at predicting non-high users, not so good at predicting high-users. The total proportion of inaccurately classified individuals (= the training error) is found in last table. Base on that table:</p>
-<p><em>69% is correctly identifed as non-high users </em>2% correctly identified as high users.</p>
-<p><em>1% non-high users uncorrectly identified as high users </em>28% high users uncorrectly identified as non high users</p>
+<ul>
+<li>69% is correctly identifed as non-high users</li>
+<li><p>2% correctly identified as high users.</p></li>
+<li>1% non-high users uncorrectly identified as high users</li>
+<li><p>28% high users uncorrectly identified as non high users</p></li>
+</ul>
 <p>However, 71% is correctly identified, se better than guessing!</p>
 <p>The average number of wrong predictions in the training data was 0.28</p>
 <pre class="r"><code>library(dplyr)
@@ -719,7 +728,6 @@ loss_func(class = alc$high_use, prob = alc$probability)</code></pre>
 <div id="cross-validation-ofthe-performance-of-different-logistic-regression-models" class="section level3">
 <h3>Cross-validation ofthe performance of different logistic regression models</h3>
 <p>Super-Bonus: Perform cross-validation to compare the performance of different logistic regression models (= different sets of predictors). Start with a very high number of predictors and explore the changes in the training and testing errors as you move to models with less predictors. Draw a graph displaying the trends of both training and testing errors by the number of predictors in the model.</p>
-<p>?cbind(</p>
 <hr />
 </div>
 </div>
