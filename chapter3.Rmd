@@ -189,9 +189,29 @@ loss_func(class = alc$high_use, prob = alc$probability)
 
 ##step 7
 ###10-fold Cross-validation
-Bonus: Perform 10-fold cross-validation on your model. Does your model have better test set performance (smaller prediction error using 10-fold cross-validation) compared to the model introduced in DataCamp (which had about 0.26 error). Could you find such a model?
+Bonus: Perform 10-fold cross-validation on your model. 
 
-```{r}
+My model has a worse test set performance, the prediction error is 0.29, which is larger than 0.26 (in Datacamp exercise).
+
+```{r message=F}
+# the logistic regression model m and dataset alc (with predictions) are available
+
+# define a loss function (average prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+# compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = alc$probability)
+
+# 10-fold cross-validation on your model:
+library(boot)
+nrow(alc)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = glm_res2, K = 10)
+
+# average number of wrong predictions in the cross validation
+cv$delta[1]
 
 ```
 

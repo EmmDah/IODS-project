@@ -720,7 +720,28 @@ loss_func(class = alc$high_use, prob = alc$probability)</code></pre>
 <h2>step 7</h2>
 <div id="fold-cross-validation" class="section level3">
 <h3>10-fold Cross-validation</h3>
-<p>Bonus: Perform 10-fold cross-validation on your model. Does your model have better test set performance (smaller prediction error using 10-fold cross-validation) compared to the model introduced in DataCamp (which had about 0.26 error). Could you find such a model?</p>
+<p>Bonus: Perform 10-fold cross-validation on your model.</p>
+<p>My model has a worse test set performance, the prediction error is 0.29, which is larger than 0.26 (in Datacamp exercise).</p>
+<pre class="r"><code># the logistic regression model m and dataset alc (with predictions) are available
+
+# define a loss function (average prediction error)
+loss_func &lt;- function(class, prob) {
+  n_wrong &lt;- abs(class - prob) &gt; 0.5
+  mean(n_wrong)
+}
+
+# compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = alc$probability)</code></pre>
+<pre><code>## [1] 0.2879581</code></pre>
+<pre class="r"><code># 10-fold cross-validation on your model:
+library(boot)
+nrow(alc)</code></pre>
+<pre><code>## [1] 382</code></pre>
+<pre class="r"><code>cv &lt;- cv.glm(data = alc, cost = loss_func, glmfit = glm_res2, K = 10)
+
+# average number of wrong predictions in the cross validation
+cv$delta[1]</code></pre>
+<pre><code>## [1] 0.2879581</code></pre>
 </div>
 </div>
 <div id="step-8" class="section level2">
