@@ -1,0 +1,73 @@
+
+BMIdata <- read.delim("BMI_mortality_09022018.txt")
+BMIfig1 <- subset(BMI_, nonT1D==0 & DNGRP<5 & AGE>17.99)
+
+
+BMIdecade <- prop.table(table(BMIfig1$BMIGRP_abc, BMIfig1$Visit.decade) ,2)
+BMIdecade <- as.data.frame(BMIdecade)
+
+#rename
+library(plyr)
+BMIdecade <- rename(BMIdecade, c("Var1"="BMIcategory", "Var2"="Decade"))
+BMIdecade <- rename(BMIdecade, c("Freq"="Percentage"))
+BMIdecade$PRC <- BMIdecade$Percentage*100
+
+#change levels
+BMIdecade$BMIcategory <- factor(BMIdecade$BMIcategory, levels = c('Underweight','Normalweight','Overweight','Obesity'))
+ana <- mutate(BMIdecade, foo= ifelse(PRC > 2, NA, BMIcategory))
+bob <- mutate(BMIdecade, foo = ifelse(PRC < 2, NA, BMIcategory))
+BMIdecade$PRC2 <- round(BMIdecade$PRC,digits=1)
+?round
+
+ana <- subset(ana, PRC>2)
+library(scales)
+#plot for manuscript in grey colors
+?pdf()
+
+pdf("Figure1_20Apr2016.pdf",
+    width=4.6, height=4.4, pointsize=8)
+
+
+
+ggplot(BMIdecade,aes(x = Decade, y = Percentage,fill = BMIcategory, width=.8, family="sans")) + 
+  geom_bar(stat = "identity", colour="black", size = 0.3) +
+  guides(size = FALSE) +
+  scale_fill_manual(values = c("dimgray", "white", "lightgray", "black"), name = "BMI category") +
+  scale_y_continuous(labels = percent_format()) +
+  geom_text(aes(y=c(0.27,0.04,0.75,1.02,0.28,0.05,0.75,1.02,0.38,0.09,0.78,1.02),
+                label=paste(sprintf("%0.1f", round(PRC2, digits = 2))),family="sans"),size=3, 
+            colour=ifelse(BMIdecade$BMIcategory=="Obesity","white","black"))+
+  theme_bw()+theme(legend.position="right",
+                      text = element_text(size=10,family="sans"),
+                      axis.text=element_text(size=10),
+                      axis.title.y = element_blank())
+
+ggplot(BMIdecade,aes(x = Decade, y = Percentage,fill = BMIcategory, width=.8)) +
+  scale_fill_manual(values = c("dimgray", "white", "lightgray", "black" )) +
+  geom_bar(position = "fill",stat = "identity", colour="black")  +
+  scale_y_continuous(labels = percent_format()) +
+  theme_bw()+theme(legend.position="right",
+                      text = element_text(size=8,family="sans"),
+                      axis.text=element_text(size=8),
+                      axis.title.y = element_blank())
+
+annotate_figure(plot1, top = NULL, bottom = NULL, left = NULL, right = NULL,
+                fig.lab = NULL, fig.lab.pos = c("top.left", "top", "top.right",
+                                                "bottom.left", "bottom", "bottom.right"))
+?round()
+c(0.15,0.25,0.75,1.0,0.15,0.25,0.75,1.0,0.15,0.25,0.75,1.0)
+tiff("Figure1_final2.tif",
+     width=11.7, height=9.0, units="cm", res=600)
+ggsave("Figure1_15May2018finale2.tif", width=11.7, height=9.0, units="cm", dpi=600, device="tiff")
+?ggsave()
+# ggplot(BMIdecade,aes(x = Decade, y = Percentage,fill = BMIcategory)) + 
+#   geom_bar(position = "fill",stat = "identity") +
+#   scale_fill_grey(start = 0.8, end = 0.2) +
+#   scale_y_continuous(labels = percent_format()) +
+#   geom_text(aes(label=paste(round(BMIdecade$PRC,1),"%")), position=position_stack(vjust = 0.75),size=6,family="serif", 
+#             colour=ifelse(BMIdecade$BMIcategory=="Normalweight","white","black"))+
+#   theme_light()+theme(legend.position="right",
+#                       text = element_text(size=18,family="serif"),
+#                       axis.text=element_text(size=20),
+#                       axis.title.y = element_blank())
+17.3 cm

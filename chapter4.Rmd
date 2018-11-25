@@ -1,0 +1,232 @@
+
+#Exercise 4
+
+##Step 2.Description of data
+In step 1 I created a new chapter called chapter 4. The MASS library contains the Boston data set, which has 506 obs. of  14 variables. The 506 observations are records (housing values) for 506 neighborhoods (suburbs) around Boston.The following 14 variables are included in Boston:
+
+
+ * crim   : num  per capita crime rate by town.
+ * zn     : num  proportion of residential land zoned for lots over 25,000 sq.ft
+ * indus  : num  proportion of non-retail business acres per town.
+ * chas   : int  Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)
+ * nox    : num  nitrogen oxides concentration (parts per 10 million).
+ * rm     : num  average number of rooms per dwelling.
+ * age    : num  proportion of owner-occupied units built prior to 1940..
+ * dis    : num  weighted mean of distances to five Boston employment centres.
+ * rad    : int  index of accessibility to radial highways..
+ * tax    : num  full-value property-tax rate per \$10,000.
+ * ptratio: num  pupil-teacher ratio by town..
+ * black  : num  1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town.
+ * lstat  : num  lower status of the population (percent)..
+ * medv   : num  median value of owner-occupied homes in \$1000s.
+
+
+```{r message=F, warnings=F}
+##Load the Boston data from the MASS package
+library(MASS)
+data(Boston)
+##structure of Boston data
+str(Boston)
+##dimensions of Boston data
+dim(Boston)
+```
+
+
+#Step 3
+
+##Numerical summary of data
+The summary of the variables in the data is shown below. Based on the large differences between mean and median of values of "black", "tax", "rad","age", "indus", "zn" and "crim", looks like the distribution of these are skewed.
+
+```{r}
+
+library(MASS);library(knitr)
+(summary(Boston))
+```
+#Graphical overview of the distributions
+Figure 1 shows a graphical summary of the distribution of all variables in the dataset.Based on that:
+
+Many of the variables are skewed, comments on a few variables
+  * Age (prportion of houses build before 1940) is skewed and there is proportionally more suburbs with older houses in the dataset.
+  * Crime rate is skewed (crim), looks like most suburbs have crime rate close to 0, but a few has really high.
+* The distribution  of the accessibility to radial highways (rad) the proprtion of non-retail business (indus) and the tax rates (tax) are bimodial.
+
+```{r warning=F, message=F, fig.height=9, fig.width=9}
+library(ggplot2);library(dplyr);library(tidyr)
+gather(Boston) %>% ggplot() + geom_density(aes(value)) + facet_wrap("key", scales = "free")+theme_minimal()+ggtitle("Figure 1. Distributions of variables in Boston data") 
+```
+
+##Relationships between variables in the data
+Figure 2 shows the relationships between variables in Boston data, by looking at the correlations between the data. Tax is strongly (r2 above 0.7) positively correlated with rad (accessibility to radial highways) and proportion of non-retail businesses (indus). Crim rate in the suburbs correlate postively with accesibility to radial highways and higher taxes.Overall, there are quite many moderate-strong correlations between some of the variables, could these correlations sets form clusters?
+
+```{r warning=F, message=F, fig.height=9, fig.width=9}
+library(tidyverse);library(MASS);library(corrplot)
+# MASS, corrplot, tidyverse and Boston dataset are available
+
+# calculate the correlation matrix 
+cor_matrix<-cor(Boston) 
+
+# visualize the correlation matrix
+corrplot(cor_matrix, method="color",  
+     diag=FALSE,
+     type="upper", 
+     order="hclust", 
+     title="Figure 2. Correlations between variables in Boston data",
+     addCoef.col = "black", # Add coefficient of correlation
+     mar=c(0,0,1,0) 
+     )
+
+
+
+```
+
+
+#Step 4 Standardize dataset
+Whole dataset Boston was Standardized using scale(), summaries of the scaled data are shown below. SCale() subtract the mean and divide by the standard deviation of your variable. The result will have mean=0 and sd=1.The means and variances of all variables are now the same.
+
+```{r results="asis"}
+library(MASS);library(dplyr); library(knitr)
+# MASS and Boston dataset are available
+
+# center and standardize variables
+boston_scaled <- scale(Boston)
+
+# summaries of the scaled variables
+summary(boston_scaled)
+
+# class of the boston_scaled object
+class(boston_scaled)
+
+# change the object to data frame
+boston_scaled <- as.data.frame(boston_scaled)
+
+#make quantiles of crim rate in scaled boston data
+bins <- quantile(boston_scaled$crim)
+#check values of bin
+bins
+
+#based on the quatnile values made the new variable crim
+crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE)
+#variable looks good, quite equal group sizes, 4 quantiles
+kable(table(crime), caption="Table 1.crim rate ranges (min-max) in quantile groups (and N)")
+crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE, label=c("low","med_low","med_high","high"))
+kable(table(crime), caption = "Table 2. Names of crime rates quantile groups (and N)")
+
+#remove crim (not crime)
+boston_scaled <- dplyr::select(boston_scaled, -crim)
+#new variable crime added to dataset
+boston_scaled <- data.frame(boston_scaled, crime)
+
+#Dividing the data set into train (80% of data) and test
+n <- nrow(boston_scaled)
+#randomly selected indivials 80%
+ind <- sample(n,  size = n * 0.8)
+#training set
+train <- boston_scaled[ind,]
+# create test set 
+test <- boston_scaled[-ind,]
+
+
+```
+
+##Step 5: Linear discriminant analysis
+
+Fited the linear discriminant analysis on the train set. Used the categorical crime rate as the target variable and all the other variables in the dataset as predictor variables. Figure 3 shows the LDA (bi)plot.
+
+About linear discriminant analysis:
+Target variable is categorical and this classification method tries to find the variables (or finds the (linear) combination of the variables) that disciminate/sepratate the classes/groups in the target variable best.But it can be also used to predict classes in the new data.
+Assumptions: variables are normally distributed, variables have same variance and that is the reasons variables were scaled previously
+
+```{r fig.height=9, fig.width=9, fig.cap="Figure 3. LDA plot"}
+#lda of trained data
+lda.fit <- lda(crime~ ., data = train)
+lda.fit
+
+# the function for lda biplot arrows
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+
+# target classes as numeric
+classes <- as.numeric(train$crime)
+
+# plot the lda results
+plot(lda.fit, dimen = 2, col = classes, pch = classes)
+lda.arrows(lda.fit, myscale = 1)
+
+```
+
+
+##Step 6: Predict crime classes in test using LDA
+
+The classes was predicted with the LDA model on the test data. In the Cross  you can see the results with the crime categories from the test set. Based on that you can see:
+
+* Of the 32 of the suburbs with class low crime rate, 14 was correctly predicted (44%, so less than half), however, predictions were not far away: the rest 18 suburbs with class low crime rate was predicted to have a medium low crime rate. Not too bad!
+
+* Of The 20 suburbs with medium low crim rates, 16 (80%) was predicted to have medium low crime rate --> quite good!
+
+* Of the 23 suburbs with medium high crime rates, 14 (61%) was correctly predicted, 2 (9%) was predicted wronlgy as high and  7 wrongly as medium low (30%). Not as good as the previous class but better than the first.
+
+* The predictions of crime rate class high performed best! All 27 (100%) correctly predicted as high. 
+
+
+```{r}
+
+library(MASS)
+#classe from 
+correct_classes <- test$crime
+test <- dplyr::select(test, -crime)
+lda.fit <- lda(crime~ ., data = train)
+lda.pred <- predict(lda.fit, newdata = test)
+
+
+table(correct = correct_classes, predicted = lda.pred$class)
+
+```
+
+
+#Step 7:k-means clustering
+There are different ways to determine if observations are similar or dissimilar to each other. Distance measure can be used for this, and I used dist(), which has as default the most common distance measure the Euclidean distance. The distances were saved to object "dist_eu". After distances were calculated k-means was run on the dataset.  K-means is easy and often find a solution, however a small change in the dataset can produce a very different result.
+
+```{r fig.height=12, fig.width=12}
+##Reload the Boston dataset and standardize
+library(MASS);library(ggplot2)
+data('Boston')
+boston_scaled2 <- as.data.frame(scale(Boston))
+
+
+##Calculate the distances between the observations (Euclidian)
+dist_eu <-dist(boston_scaled2)
+summary(dist_eu)
+
+##Run k-means algorithm on the dataset
+# k-means clustering
+km <-kmeans(Boston, centers = 3)
+
+# plot the Boston dataset with clusters
+pairs(Boston, col = km$cluster)
+
+set.seed(123)
+
+# determine the number of clusters
+k_max <- 10
+
+# calculate the total within sum of squares
+twcss <- sapply(1:k_max, function(k){kmeans(Boston, k)$tot.withinss})
+
+# visualize the results
+qplot(x = 1:k_max, y = twcss, geom = 'line')
+
+# k-means clustering
+km <-kmeans(Boston, centers = 2)
+
+# plot the Boston dataset with clusters
+pairs(Boston, col = km$cluster)
+
+
+```
+Reload the Boston dataset and standardize the dataset (we did not do this in the Datacamp exercises, but you should scale the variables to get comparable distances). Calculate the distances between the observations. Run k-means algorithm on the dataset. Investigate what is the optimal number of clusters and run the algorithm again. Visualize the clusters (for example with the pairs() or ggpairs() functions, where the clusters are separated with colors) and interpret the results. (0-4 points)
