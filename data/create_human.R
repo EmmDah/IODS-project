@@ -18,11 +18,40 @@ summary(hd)
 # print out summaries of the gender inequality
 summary(gii)
 
-#Explore the datasets: see the structure and dimensions of the data. Create summaries of the variables. (1 point)
 #Look at the meta files and rename the variables with (shorter) descriptive names. (1 point)
+colnames(hd) <- c("HDI_rank", "Country", "HDI", "Life_expectancy", "Exp_education", "Mean_education",
+                  "GNI_per_Capita","GNI_minus_HDI_rank" )
+
+colnames(gii) <- c("GII_rank", "Country", "GII_index", "MMR", "ABR", 
+                   "PR", "SE_females", "SE_males",
+                   "LFPR_females", "LFPR_males")
+
+##Abbreviations used:
+#Maternal mortality ratio (MMR), Adolescent birth rate (ABR)
+#Share of parliamentary seats held by each sex (PR)
+#Population with at least some secondary education (SE)
+# Labour force participation rate (LFPR):
+
+
 #Mutate the "Gender inequality" data and create two new variables. 
-#The first one should be the ratio of Female and Male populations with secondary education in each country. (i.e. edu2F / edu2M). 
-#The second new variable should be the ratio of labour force participation of females and males in each country (i.e. labF / labM). (1 point)
-#Join together the two datasets using the variable Country as the identifier. 
-#Keep only the countries in both data sets (Hint: inner join). 
-#The joined data should have 195 observations and 19 variables. Call the new joined data "human" and save it in your data folder. (1 point)
+
+#First: ratio of Female and Male populations with secondary education 
+?mutate()
+gii <- mutate(gii, SE_ratio_FM = SE_females/SE_males)
+#Second:  ratio of labour force participation (LFPR) of females and males in each country
+gii <- mutate(gii, LFPR_ratio_FM = LFPR_females/LFPR_males)
+
+#check data
+head(gii)
+
+#Join together dataset, Country is id
+human <- inner_join(hd, gii, by = "Country")
+head(human)
+dim(human);str(human)
+
+#'data.frame':	195 obs. of  19 variables:looks good!
+. 
+#save data
+write.table(human, "~/GitHub/IODS-project/data/human_2018.txt", quote=F, sep="\t", row.names=F)
+
+
