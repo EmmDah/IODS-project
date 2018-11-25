@@ -83,7 +83,7 @@ corrplot(cor_matrix, method="color",
 #Step 4 Standardize dataset
 Whole dataset Boston was Standardized using scale(), summaries of the scaled data are shown below. SCale() subtract the mean and divide by the standard deviation of your variable. The result will have mean=0 and sd=1.The means and variances of all variables are now the same.
 
-```{r results="asis"}
+```{r }
 library(MASS);library(dplyr); library(knitr)
 # MASS and Boston dataset are available
 
@@ -106,9 +106,12 @@ bins
 
 #based on the quatnile values made the new variable crim
 crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE)
+
 #variable looks good, quite equal group sizes, 4 quantiles
 kable(table(crime), caption="Table 1.crim rate ranges (min-max) in quantile groups (and N)")
-crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE, label=c("low","med_low","med_high","high"))
+crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE,
+             label=c("low","med_low","med_high","high"))
+
 kable(table(crime), caption = "Table 2. Names of crime rates quantile groups (and N)")
 
 #remove crim (not crime)
@@ -192,6 +195,10 @@ table(correct = correct_classes, predicted = lda.pred$class)
 #Step 7:k-means clustering
 There are different ways to determine if observations are similar or dissimilar to each other. Distance measure can be used for this, and I used dist(), which has as default the most common distance measure the Euclidean distance. The distances were saved to object "dist_eu". After distances were calculated k-means was run on the dataset.  K-means is easy and often find a solution, however a small change in the dataset can produce a very different result.
 
+First how the total of within cluster sum of squares (WCSS). When you plot the number of clusters and the total WCSS, the optimal number of clusters is when the total WCSS drops radically. The optimal numbers of clusters is 2, according to figure below.
+
+I find it really hard to interpret the results otherwise. But some of the variables show similar patterns, for example nox rm and age seem to cluster.
+
 ```{r fig.height=12, fig.width=12}
 ##Reload the Boston dataset and standardize
 library(MASS);library(ggplot2)
@@ -229,4 +236,4 @@ pairs(Boston, col = km$cluster)
 
 
 ```
-Reload the Boston dataset and standardize the dataset (we did not do this in the Datacamp exercises, but you should scale the variables to get comparable distances). Calculate the distances between the observations. Run k-means algorithm on the dataset. Investigate what is the optimal number of clusters and run the algorithm again. Visualize the clusters (for example with the pairs() or ggpairs() functions, where the clusters are separated with colors) and interpret the results. (0-4 points)
+
