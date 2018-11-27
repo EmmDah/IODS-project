@@ -1,9 +1,7 @@
 
-#Exercise 3
+#Exercise 3: Logistic Regression
 
-##Steps 1-2
-
-###Background (Brief description of data)
+##Background (Brief description of data)
 The data is collected during the 2005-2006 school year from two public schools (secondary education) in Portugal.
 The data include student grades, demographic, social and school related variables, which were collected by using school reports and questionnaires.Among these is also alcohol use. Two datasets are provided regarding the performance in two distinct subjects: Mathematics (mat) and Portuguese language (por). These two have been combined into one file.
 
@@ -29,15 +27,14 @@ colnames(alc)
 
 ```
 
-##Step 3-4
 
-###Personal hypotheses
+##Personal hypotheses
 
 I chose the following interesting variables from the datset: "sex", "adress"" (student's home address type, rural or urban), "famrel"  (from 1 - very bad to 5 - excellent) and higher (wants to take higher education (binary: yes or no)). My personal hypotheses regarding these variables and their effect on alcohol consuption is:
 
 Students  of male sex, with poor family relationships,that don't want to make a higher eduction and live in an urban environment drink more alcohol.
 
-###Numerical and graphical exploration of the variables
+##Data exploration
 
 Based on a numerical exploration of the data, it seems that familial relationships are slightly better among non-high alcohol users (table 2a), as hypothesized. However, the mean  alcohol intake seem to be higher among persons living in an rural envoronment(2b), which was unexpected. Those that wanted to take an higher eductation and persons of male sex had on average a higher alcohol intake (Table 2c-d). The same is also clear from the distribution figures of the selected variables (figure1a-d)
 
@@ -96,8 +93,7 @@ ggarrange(ad, sex, hig, famre, labels=c("1a", "1b", "1c", "d"))
 
 ```
 
-##step 5
-###Logistic regression
+##Logistic regression
 
 Based on the summary of the fitted model, familial relationships are negatively associated with high alcohol use (P=0.02), having an urban address is negatively associatiod with alcohol but not on a statistically significant level (P=0.08), male sex is positively associated with high alcohol use (P=0.0002) and wanting to take a higher education is negatively associated (but not statistically significant!) with high alcohol use. The z- and p-values are based on the wald test, which is used in the model to test whether the pairwise difference between the coefficient and the reference class and the other class is different from zero or not (categorical values). 
 
@@ -123,8 +119,7 @@ kable(ORs_CI, caption = "Table 3. Odds Ratio and 95%CI")
 
 ```
 
-##Step 6
-###The predictive power of the model
+##The predictive power of the model
 A 2x2 cross tabulation of predictions versus the actual values is found in tables and a graphic visualizing both the actual values and the predictions is in figure 4. 106 observations are predicted as false, even though they are true high users of alcohol (264 persons correctly predicted as non high alcohol users). Only 4 persons are falsely predicted as high alc users even though they are not, 8 persons are predicted correctly as high alc users. Model good at predicting non-high users, not so good at predicting high-users. The total proportion of inaccurately classified individuals (= the training error) is found in last table. Base on that table:
 
 * 69% is correctly identifed as non-high users
@@ -187,8 +182,7 @@ loss_func(class = alc$high_use, prob = alc$probability)
 
 ```
 
-##step 7
-###10-fold Cross-validation
+##10-fold Cross-validation
 
 COMMENT TO EVALUATOR: DONT EVALUATE THIS STEP! SUBMITTED AFTER DEADLINE (did not have time to make the bonus step before deadline but wanted to do it still)
 Bonus: Perform 10-fold cross-validation on your model. 
@@ -217,8 +211,7 @@ cv$delta[1]
 
 ```
 
-##step 8
-###Cross-validation ofthe performance of different logistic regression models 
+##Cross-validation of different logistic regression models 
 Super-Bonus: Perform cross-validation to compare the performance of different logistic regression models (= different sets of predictors). Start with a very high number of predictors and explore the changes in the training and testing errors as you move to models with less predictors. Draw a graph displaying the trends of both training and testing errors by the number of predictors in the model. 
 
 ```{r}

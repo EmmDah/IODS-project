@@ -1,7 +1,7 @@
 
-#Exercise 2
+#Exercise 2: Regression and model validation
 
-#Background
+##Background
 The dataset "students2014" contains information from 166 students attending an introductory course at the University of Helsinki. Students answered questions regarding learning approaches. The data contains 7 variables: "age", "gender", "attitude" (the global attitude attitude toward statistics), "deep" (higher points indicate a strong need to engage in the actual content), "stra" (higher points indicate strategies used that maximices the the chance to get a high grade) , "surf" (higher points indicate an intention to get trough with least amonut of trouble) and "points" (Exam points). 
 
 
@@ -11,8 +11,8 @@ dim(students2014)
 str(students2014)
 
 ```
-#Summary data
-##Particpant summary
+##Summary data
+###Particpant summary
 
 The summary for all variables in data is shown in table 1 and it contains the minimal and maximal value, the mean, the median and the 1st and 4th quartile for each variable. More women than men took part in the study. The average age ranged from 17 years to 55 years. The median and mean for age deviates from each other, indicating that age is not normally distributed. 
 
@@ -78,7 +78,7 @@ p_3
 
 ```
 
-#Linear regression
+##Linear regression
 
 We run a linear regression to test how much attitude, age and gender explain the exam points. Of the included variables, there was only a statistically significant relationship between attitude and exam points (P=8.34e-09). Each increase 1 score increase in attitude increased the exam points by 3.6 points. Age and gender was removed from analysis, since they were did statistically significantly associate with exam points and the analysis was rerun.The attitude explained 18.56 % of the variability in Exam points.
 
@@ -97,7 +97,7 @@ summary(my_model)
 ```
 
 
-##Draw diagnostic plots
+##Diagnostic plots
 
 The Residual vs fitted plot is used to detect non-linearity, unequal error variances, and outliers, which linear regression assume there is not. Based on the plot it looks like there are some outliers.
 
