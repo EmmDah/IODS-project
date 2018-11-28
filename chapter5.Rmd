@@ -1,0 +1,102 @@
+
+#Exercise 5: Dimensionality reduction techniques
+
+##Data exploration
+###Comments on the numerical summary and distributions
+If we look at the numerical summary below (escpecially the means and the medians), and the figure 1 (the diagnoally located density distributions) we can se that some of the distributions are skewed. The variables that are the most skewed are GNI and maternal mortality and these have a few observations with very much higher values.
+
+###Comments on the relationships
+The variables in the dataset human are quite correlated.In Figure 1 you can see the distributions, the correlations and the relationships between each variable in the dataset human. From the figure we conclude see that:
+
+*Maternal mortality:*
+
+* High negative correlation with Exp.Life and Exp.Edu and GNI, so When life expectansy (r2=-0.86) and expected education (-0.74) increase, maternal mortality decreases. Life expectansy and expected education are highly positively correlated to each other as well (r2=0.79)
+* High postive correlation with adoscesent birt rate (r2=0.76) so when adolescent birth rate increse the maternal mortality rate increases. 
+
+*GNI:*
+
+* We also se that  the GNI, National Gross income increases with increasing life expectansy and expected education, and decreases with higher maternal mortality rates and adolescent birth rates.
+
+*Still worth mentioning of these is the drecrease in maternal mortality and increse in GNI with higher education in women.
+
+```{r fig.height=9, fig.width=9}
+
+human <- read.delim("~/GitHub/IODS-project/data/human_new_2018.txt")
+summary(human)
+
+library(GGally)
+library(ggplot2)
+library(corrplot)
+
+#draw a graphical summary using ggpairs()
+#?ggpairs()
+p <- ggpairs(human, lower=list(continuous=wrap("smooth", colour="#00BFC4", alpha=0.5),combo = wrap("facethist", bins = 20)), title ="Figure 1. Scatter plot, density plot and the correlation coefficient, between each pair of variables")
+
+p+theme_bw()
+
+```
+
+
+##principal component analysis (PCA) 
+
+```{r fig.height=9, fig.width=9}
+#Run principal component analysis (PCA) 
+# perform principal component analysis (with the SVD method)
+pca_human <- prcomp(human)
+# the variability captured by the principal components
+# create and print out a summary of pca_human
+# create and print out a summary of pca_human
+s <- summary(pca_human)
+s
+
+# rounded percentages of variance captured by each PC
+pca_pr <- round(100*s$importance[2,], digits = 1) 
+
+# print out the percentages of variance
+pca_pr
+
+# create object pc_lab to be used as axis labels
+pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
+
+# draw a biplot
+biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
+
+
+```
+
+
+
+##principal component analysis (PCA) with scaled variables
+
+```{r fig.height=9, fig.width=9}
+#Run principal component analysis (PCA) 
+
+#standardize datset
+human_std <- scale(human)
+# perform principal component analysis (with the SVD method)
+pca_human_std <- prcomp(human_std)
+# the variability captured by the principal components
+# create and print out a summary of pca_human
+# create and print out a summary of pca_human
+s_std <- summary(pca_human_std)
+s_std
+
+# rounded percentages of variance captured by each PC
+pca_pr_std <- round(100*s_std$importance[2,], digits = 1) 
+
+# print out the percentages of variance
+pca_pr_std 
+
+# create object pc_lab to be used as axis labels
+pc_lab_std <- paste0(names(pca_pr_std), " (", pca_pr_std, "%)")
+
+# draw a biplot
+biplot(pca_human_std, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab_std[1], ylab = pc_lab_std[2])
+
+
+```
+
+
+
+
+

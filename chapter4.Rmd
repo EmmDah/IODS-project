@@ -1,7 +1,7 @@
 
-#Exercise 4
+#Exercise 4:Clustering and classification
 
-##Step 2.Description of data
+##Description of data
 In step 1 I created a new chapter called chapter 4. The MASS library contains the Boston data set, which has 506 obs. of  14 variables. The 506 observations are records (housing values) for 506 neighborhoods (suburbs) around Boston.The following 14 variables are included in Boston:
 
 
@@ -31,10 +31,8 @@ str(Boston)
 dim(Boston)
 ```
 
-
-#Step 3
-
-##Numerical summary of data
+##Data exploration
+###Numerical summary of data
 The summary of the variables in the data is shown below. Based on the large differences between mean and median of values of "black", "tax", "rad","age", "indus", "zn" and "crim", looks like the distribution of these are skewed.
 
 ```{r}
@@ -42,7 +40,8 @@ The summary of the variables in the data is shown below. Based on the large diff
 library(MASS);library(knitr)
 (summary(Boston))
 ```
-#Graphical overview of the distributions
+
+###Graphical overview of the distributions
 Figure 1 shows a graphical summary of the distribution of all variables in the dataset.Based on that:
 
 Many of the variables are skewed, comments on a few variables
@@ -55,7 +54,7 @@ library(ggplot2);library(dplyr);library(tidyr)
 gather(Boston) %>% ggplot() + geom_density(aes(value)) + facet_wrap("key", scales = "free")+theme_minimal()+ggtitle("Figure 1. Distributions of variables in Boston data") 
 ```
 
-##Relationships between variables in the data
+###Relationships in the data
 Figure 2 shows the relationships between variables in Boston data, by looking at the correlations between the data. Tax is strongly (r2 above 0.7) positively correlated with rad (accessibility to radial highways) and proportion of non-retail businesses (indus). Crim rate in the suburbs correlate postively with accesibility to radial highways and higher taxes.Overall, there are quite many moderate-strong correlations between some of the variables, could these correlations sets form clusters?
 
 ```{r warning=F, message=F, fig.height=9, fig.width=9}
@@ -80,7 +79,7 @@ corrplot(cor_matrix, method="color",
 ```
 
 
-#Step 4 Standardize dataset
+##Standardization
 Whole dataset Boston was Standardized using scale(), summaries of the scaled data are shown below. SCale() subtract the mean and divide by the standard deviation of your variable. The result will have mean=0 and sd=1.The means and variances of all variables are now the same.
 
 ```{r }
@@ -131,7 +130,7 @@ test <- boston_scaled[-ind,]
 
 ```
 
-##Step 5: Linear discriminant analysis
+##Linear discriminant analysis
 
 Fited the linear discriminant analysis on the train set. Used the categorical crime rate as the target variable and all the other variables in the dataset as predictor variables. Figure 3 shows the LDA (bi)plot.
 
@@ -164,7 +163,7 @@ lda.arrows(lda.fit, myscale = 1)
 ```
 
 
-##Step 6: Predict crime classes in test using LDA
+##Predict crime classes in test using LDA
 
 The classes was predicted with the LDA model on the test data. In the Cross  you can see the results with the crime categories from the test set. Based on that you can see:
 
@@ -192,7 +191,7 @@ table(correct = correct_classes, predicted = lda.pred$class)
 ```
 
 
-#Step 7:k-means clustering
+##K-means clustering
 There are different ways to determine if observations are similar or dissimilar to each other. Distance measure can be used for this, and I used dist(), which has as default the most common distance measure the Euclidean distance. The distances were saved to object "dist_eu". After distances were calculated k-means was run on the dataset.  K-means is easy and often find a solution, however a small change in the dataset can produce a very different result.
 
 First how the total of within cluster sum of squares (WCSS). When you plot the number of clusters and the total WCSS, the optimal number of clusters is when the total WCSS drops radically. The optimal numbers of clusters is 2, according to figure below.
