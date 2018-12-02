@@ -4,12 +4,13 @@
 ##Data exploration
 ###Numerical summaries and distributions
 Based on numerical summary below (escpecially the means and the medians), and the the diagnoally located density distributions in figure 1, we can see that:
-* Some of the distributions are skewed. The variables that are the most skewed are *GNI* and *maternal mortality*
+
+--> Some of the distributions are skewed. The variables that are the most skewed are *GNI* and *maternal mortality*
 
 - *Maternal mortality ratio*: most countries has maternal mortality less than 200 deaths per 100,000 births (median:49). Based on figure 1 and 2a, a few countries has much higher than than that: up to 1100 deaths per 100,000 births. 
   -Sierra Leone has the highest maternal mortality (Table 1)
 - *Gross national income (GNI) per capita*: Most countries GNI is less than 25,000 dollar (median=12040), a few has much higher up to 123,123 dollar
-  --Singapore has the highest GNI (Table 2)
+  -Singapore has the highest GNI (Table 2)
 
 
 ```{r}
@@ -24,14 +25,14 @@ The variables in the dataset human are quite correlated.In Figure 1 you can (see
 
 *Maternal mortality:*
 
-* High negative correlation with Exp.Life and Exp.Edu and GNI, so When life expectansy (r2=-0.86) and expected education (-0.74) increase, maternal mortality decreases. Life expectansy and expected education are highly positively correlated to each other as well (r2=0.79)
-* High postive correlation with adoscesent birt rate (r2=0.76) so when adolescent birth rate increse the maternal mortality rate increases. 
+- High negative correlation with Exp.Life and Exp.Edu and GNI, so When life expectansy (r2=-0.86) and expected education (-0.74) increase, maternal mortality decreases. Life expectansy and expected education are highly positively correlated to each other as well (r2=0.79)
+- High postive correlation with adoscesent birt rate (r2=0.76) so when adolescent birth rate increse the maternal mortality rate increases. 
 
 *GNI:*
 
-* We also se that  the GNI, National Gross income increases with increasing life expectansy and expected education, and decreases with higher maternal mortality rates and adolescent birth rates.
+- We also se that  the GNI, National Gross income increases with increasing life expectansy and expected education, and decreases with higher maternal mortality rates and adolescent birth rates.
 
-*Still worth mentioning of these is the drecrease in maternal mortality and increse in GNI with higher education in women.
+- Still worth mentioning of these is the drecrease in maternal mortality and increse in GNI with higher education in women.
 
 ```{r fig.height=9, fig.width=9}
 
@@ -71,9 +72,10 @@ kable(subset(human, GNI > 70000), caption="Table 1. Countries where GNI is over 
 
 
 
-##principal component analysis (PCA) 
+##Principal component analysis (PCA) 
+Performed PCA with unscaled data. As shown below, PC1 capture 100% of the variablility in the dataset. Other variables capture none.If we look at the biplot (figure 3), it does not loo good. We only see an arrow for GNI.
 
-```{r fig.height=9, fig.width=9}
+```{r fig.height=9, fig.width=9, fig.cap="Figure 3. Biplot of PCA of unscaled variables"}
 #Run principal component analysis (PCA) 
 # perform principal component analysis (with the SVD method)
 pca_human <- prcomp(human)
@@ -101,8 +103,11 @@ biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab
 
 
 ##principal component analysis (PCA) with scaled variables
+After rerunning the PCA with scaled variables, we see below that PC1 capture 53.6% of the variability and PC2 capture 16.2% of the variability. Rest of the PCs capture from 7.6-1.3% of the variability. The biplot in figure 4. looks much better now. In figure 3,(the bad biplot of unscaled variables), the data was not scaled. Since GNI has the highest variance it will dominate the PCA just because of that and this is not what we want because it does not mean that the GNI carries significantly more information compared to the other variables. To get a fair comparison we thus need to scale our variables, and the results of that is shown in figure 4.
 
-```{r fig.height=9, fig.width=9}
+The arrows point in the direction of increasing values for each of the variables. Those arrows that are close are highly correlated variables. Maternal mortality and adolescent birth rate seem to go together.Education, life expectansy and GNI also cluster together and Labor.FM females in parliament are highly correlated. Countries are quite spread out, not much clustering in my eyes.
+
+```{r fig.height=9, fig.width=9, fig.cap="Figure 4. Biplot of PCA of scaled variables"}
 #Run principal component analysis (PCA) 
 
 #standardize datset
@@ -134,7 +139,16 @@ biplot(pca_human_std, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc
 
 ##Multiple correspondence analysis (MCA) of categorical values
 
-```{r fig.height=9, fig.width=9}
+Loaded the tea dataset from package Factominer. The original datset had 300 obs. of  36 variables, but I selected 6 variables for further analysis ("Tea", "How", "how", "sugar", "where", "lunch"). Below you can see the brief exploratioon of the datset. The histogram shows you the groups of each variables and their count. 
+
+Then performed MDA, and biplot is shown in figure 5. the first dimension capture 15% of the variance and the second 14% of the variance i the dataset.The further away thevariables in the plot are the more dissimilar they are. Hence;
+
+- unpackaged and tea shop seem to go together, but they arr very dissimilar from all other
+- people who drink unpacked teas, teas from teashops cluster together whereas those who drink more regular, black tea, that is packaged and bought from chain stores cluster together.
+- Green tea drinkers are between these two aforementioned, maybe cluster with unpacked teashop drinkers.
+
+
+```{r message=F, warnings=F, fig.height=9, fig.width=9, fig.cap="Figure 5, Biplot of MDS"}
 
 library(FactoMineR);library(ggplot2);library(dplyr);library(tidyr)
 
