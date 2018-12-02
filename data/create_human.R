@@ -122,15 +122,15 @@ tail(human_, 10)
 last <- nrow(human_) - 7
 
 # choose everything until the last 7 observations
-human_ <- human[1:last, ]
+human_ <- human_[1:last, ]
 
 # add countries as rownames
 rownames(human_) <- human_$Country
 
 #remove country column
-human_ <- dplyr::select(human_, -Country) 
+human_ <- select(human_, -Country)
 
 str(human_);head(human_)
 
-
+complete.cases(human_)
 write.table(human_, "~/GitHub/IODS-project/data/human_new_2018.txt", quote=F, sep="\t", row.names=T)

@@ -2,11 +2,25 @@
 #Exercise 5: Dimensionality reduction techniques
 
 ##Data exploration
-###Comments on the numerical summary and distributions
-If we look at the numerical summary below (escpecially the means and the medians), and the figure 1 (the diagnoally located density distributions) we can se that some of the distributions are skewed. The variables that are the most skewed are GNI and maternal mortality and these have a few observations with very much higher values.
+###Numerical summaries and distributions
+Based on numerical summary below (escpecially the means and the medians), and the the diagnoally located density distributions in figure 1, we can see that:
+* Some of the distributions are skewed. The variables that are the most skewed are *GNI* and *maternal mortality*
 
-###Comments on the relationships
-The variables in the dataset human are quite correlated.In Figure 1 you can see the distributions, the correlations and the relationships between each variable in the dataset human. From the figure we conclude see that:
+- *Maternal mortality ratio*: most countries has maternal mortality less than 200 deaths per 100,000 births (median:49). Based on figure 1 and 2a, a few countries has much higher than than that: up to 1100 deaths per 100,000 births. 
+  -Sierra Leone has the highest maternal mortality (Table 1)
+- *Gross national income (GNI) per capita*: Most countries GNI is less than 25,000 dollar (median=12040), a few has much higher up to 123,123 dollar
+  --Singapore has the highest GNI (Table 2)
+
+
+```{r}
+human <- read.delim("~/GitHub/IODS-project/data/human_new_2018.txt")
+summary(human)
+
+```
+
+
+###Relationships between variables
+The variables in the dataset human are quite correlated.In Figure 1 you can (see besides the distributions) the correlations and the relationships between each variable in the dataset human. From the figure we conclude see that:
 
 *Maternal mortality:*
 
@@ -21,12 +35,10 @@ The variables in the dataset human are quite correlated.In Figure 1 you can see 
 
 ```{r fig.height=9, fig.width=9}
 
-human <- read.delim("~/GitHub/IODS-project/data/human_new_2018.txt")
-summary(human)
-
 library(GGally)
 library(ggplot2)
 library(corrplot)
+
 
 #draw a graphical summary using ggpairs()
 #?ggpairs()
@@ -34,7 +46,29 @@ p <- ggpairs(human, lower=list(continuous=wrap("smooth", colour="#00BFC4", alpha
 
 p+theme_bw()
 
+
 ```
+```{r message=F, warnings=F, fig.height=4, fig.width=10}
+library(ggpubr);library(ggplot2);library(dplyr);library(knitr)
+
+## make a separate histogram of GNI, difficult to se x axis in fig 1
+g1 <- ggplot(human, aes(x=GNI)) +
+    geom_histogram(colour="black", fill="white")+ggtitle("Figure.2b.Gross National Income per capita")
+g2 <- ggplot(human, aes(x=Mat.Mor)) +
+    geom_histogram(colour="black", fill="white")+ggtitle("Figure.2a.Number of deaths per 100,000 births")
+
+ggarrange(g2, g1, nrow=1, ncol = 2)
+
+
+#Check which countries has high Mat. mor
+kable(subset(human, Mat.Mor > 800), caption="Table 1. Countries where maternal mortality is over 800 deaths per 100,000 births")
+
+#Check which countries has high GNI
+kable(subset(human, GNI > 70000), caption="Table 1. Countries where GNI is over 70,000$")
+
+
+```
+
 
 
 ##principal component analysis (PCA) 
@@ -97,6 +131,33 @@ biplot(pca_human_std, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc
 ```
 
 
+
+##Multiple correspondence analysis (MCA) of categorical values
+
+```{r fig.height=9, fig.width=9}
+
+library(FactoMineR);library(ggplot2);library(dplyr);library(tidyr)
+
+data(tea)
+str(tea)
+keep_columns <- c("Tea", "How", "how", "sugar", "where", "lunch")
+tea_time <- subset(tea, select=c("Tea", "How", "how", "sugar", "where", "lunch"))
+
+summary(tea_time)
+str(tea_time)
+
+gather(tea_time) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+# multiple correspondence analysis
+mca <- MCA(tea_time, graph = FALSE)
+
+# summary of the mode
+summary(mca)
+
+# visualize MCA
+plot(mca, invisible=c("ind"), habillage = "quali")
+
+```
 
 
 
